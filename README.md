@@ -6,7 +6,6 @@ SnapShare is a simple cloud application that allows unauthenticated event attend
 - Setup
 - Testing
 - Usage
-- Important Information
 
 ## Architecture
 The architecture of SnapShare consists of the following components:
@@ -32,6 +31,7 @@ Prerequisites
 
 1. Set up Google Cloud:
  - Create a new project and set the project ID in `terraform/vars/dev.tfvars`
+ - Create a storage bucket for the Terraform state files and update `backend.tf` with the bucket name
 2. Prepare the function code
 ```sh
 ./prep-function.sh
@@ -48,4 +48,11 @@ terraform apply -var-file=vars/dev.tfvars
 ```sh
 ./upload_website.sh
 ```
+
+## Usage
+
+1. Access the website: Visit your domain in a browser.
+2. Upload photos: Select photos and click the "Upload" button.
+3. View uploaded photos: Photos will be available in the Cloud Storage bucket. (Admin viewer to follow)
+
 
