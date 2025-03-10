@@ -46,7 +46,7 @@ def get_upload_url(request):
         content_type = file_info.get("contentType", "application/octet-stream")
 
         # Create unique filename with timestamp
-        blob = bucket.blob(f"uploads/{timestamp}/{filename}")
+        blob = bucket.blob(f"{event_key}/{timestamp}/{filename}")
 
         # Generate signed URL
         url = blob.generate_signed_url(

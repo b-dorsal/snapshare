@@ -168,7 +168,10 @@
         href="mailto:bdor528@gmail.com?subject=Snapshare%20Inquiry&body=Hi%20Brian%2C%20Your%20tech%20is%20really%20cool!%20I%20want%20to%20use%20it%20at%20my%20wedding.">
         Contact Brian
       </a>
+      
+      
     </footer>
+    <a href="https://github.com/b-dorsal/snapshare" >View the code</a>
   </div>
 
   <script>
@@ -246,6 +249,7 @@
       try {
         await Promise.all(uploadPromises);
         document.getElementById("status").innerText = "All uploads successful!";
+        window.location.href = "success.html";
       } catch (error) {
         document.getElementById("status").innerText = "One or more uploads failed.";
         console.error("Upload error:", error);
