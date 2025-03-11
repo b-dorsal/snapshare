@@ -34,3 +34,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 functions/data-collector/__pycache__/app.cpython-313.pyc
+
+./terraform/vars/prod.tfvars
