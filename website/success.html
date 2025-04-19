@@ -152,7 +152,7 @@
     <div class="container">
         <h1>Upload Successful!</h1>
         <p>Thank you for sharing your photos with us</p>
-        <a href="/" class="back-link">Upload more</a>
+        <a href="#" onclick="redirectToUploadPage()" class="back-link">Upload more</a>
     </div>
     <div class="footer">
         <p>Built by the groom</p>
@@ -163,6 +163,18 @@
             </a>
         </footer>
     </div>
+
+    <script>
+        function getQueryParameter(name) {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get(name);
+        }
+        
+        function redirectToUploadPage() {
+            const eventKey = getQueryParameter('eventKey');
+            window.location.href = "index.html?eventKey=" + eventKey;
+        }
+    </script>
 </body>
 
 </html>

@@ -320,7 +320,7 @@
         try {
           await Promise.all(uploadPromises);
           document.getElementById("status").innerText = "All uploads successful!";
-          window.location.href = "success.html";
+          window.location.href = "success.html?eventKey=" + eventKey;
         } catch (error) {
           document.getElementById("status").innerText = "One or more uploads failed.";
           console.error("Upload error:", error);
@@ -333,7 +333,7 @@
         console.error("Upload error:", error);
       } finally {
         // Hide the loading popover
-        // loadingPopover.hidden = true;
+        loadingPopover.hidden = true;
       }
     }
   </script>
