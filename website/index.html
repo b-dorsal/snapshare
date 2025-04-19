@@ -129,6 +129,11 @@
       color: #6D6D6D;
     }
 
+    /* Ensure the popover is hidden when the hidden attribute is applied */
+    .loading-popover[hidden] {
+      display: none !important;
+    }
+
     /* Popover styles */
     .loading-popover {
       position: fixed;
@@ -137,6 +142,7 @@
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
+      /* Semi-transparent overlay */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -146,6 +152,26 @@
       font-family: 'Poppins', sans-serif;
       font-size: 16px;
       text-align: center;
+    }
+
+    /* Inner popover content */
+    .loading-popover>div {
+      background-color: #FDF8F3;
+      /* Solid background matching the theme */
+      padding: 20px;
+      border-radius: 12px;
+      /* Curved corners */
+      box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+      /* Subtle shadow */
+      text-align: center;
+      width: 90%;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* Center the spinner and text */
+      justify-content: center;
+      /* Center the spinner and text */
     }
 
     /* Spinner styles */
@@ -215,6 +241,7 @@
   </div>
 
   <script>
+
     document.getElementById('fileInput').addEventListener('change', function () {
       const fileInput = document.getElementById('fileInput');
       const files = fileInput.files;
@@ -234,79 +261,90 @@
     }
 
     async function uploadFiles() {
-      const fileInput = document.getElementById('fileInput');
-      const files = fileInput.files;
-
-      if (files.length === 0) {
-        alert("Please select at least one file to upload.");
-        return;
-      }
-
-      const eventKey = getQueryParameter('eventKey');
-      if (!eventKey) {
-        alert("Event key is missing.");
-        return;
-      }
-
-      // Show the loading popover
-      const loadingPopover = document.getElementById("loadingPopover");
-      loadingPopover.hidden = false;
-      document.getElementById("status").innerText = "Uploading...";
-
-      // Prepare file metadata for signed URL request
-      const fileMetadata = Array.from(files).map(file => ({
-        name: file.name,
-        contentType: file.type
-      }));
-
-      // Fetch signed URLs from the Cloud Function
-      const response = await fetch("https://us-central1-snapshare-prod-453315.cloudfunctions.net/get-upload-url", {
-        method: "POST",
-        mode: 'cors',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          eventKey: eventKey,
-          files: fileMetadata
-        })
-      });
-
-      const data = await response.json();
-      const uploadUrls = data.urls;
-
-      // Upload each file to its respective signed URL
-      const uploadPromises = uploadUrls.map((uploadUrlObj, index) => {
-        const file = files[index];
-
-        return fetch(uploadUrlObj.url, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type
-          },
-          body: file
-        });
-      });
-
-      // Wait for all uploads to complete
       try {
-        await Promise.all(uploadPromises);
-        document.getElementById("status").innerText = "All uploads successful!";
-        window.location.href = "success.html";
+        const fileInput = document.getElementById('fileInput');
+        const files = fileInput.files;
+
+        if (files.length === 0) {
+          alert("Please select at least one file to upload.");
+          return;
+        }
+
+        const eventKey = getQueryParameter('eventKey');
+        if (!eventKey) {
+          alert("Event key is missing.");
+          return;
+        }
+
+        // Show the loading popover
+        const loadingPopover = document.getElementById("loadingPopover");
+        loadingPopover.hidden = false;
+        document.getElementById("status").innerText = "Uploading...";
+
+        // Prepare file metadata for signed URL request
+        const fileMetadata = Array.from(files).map(file => ({
+          name: file.name,
+          contentType: file.type
+        }));
+
+        // Fetch signed URLs from the Cloud Function
+        const response = await fetch("https://us-central1-snapshare-prod-453315.cloudfunctions.net/get-upload-url", {
+          method: "POST",
+          mode: 'cors',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            eventKey: eventKey,
+            files: fileMetadata
+          })
+        });
+
+        const data = await response.json();
+        const uploadUrls = data.urls;
+
+        // Upload each file to its respective signed URL
+        const uploadPromises = uploadUrls.map((uploadUrlObj, index) => {
+          const file = files[index];
+
+          return fetch(uploadUrlObj.url, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file.type
+            },
+            body: file
+          });
+        });
+
+        // Wait for all uploads to complete
+        try {
+          await Promise.all(uploadPromises);
+          document.getElementById("status").innerText = "All uploads successful!";
+          window.location.href = "success.html";
+        } catch (error) {
+          document.getElementById("status").innerText = "One or more uploads failed.";
+          console.error("Upload error:", error);
+        } finally {
+          // Hide the loading popover
+          loadingPopover.hidden = true;
+        }
       } catch (error) {
         document.getElementById("status").innerText = "One or more uploads failed.";
         console.error("Upload error:", error);
       } finally {
         // Hide the loading popover
-        loadingPopover.hidden = true;
+        // loadingPopover.hidden = true;
       }
     }
   </script>
 
   <!-- Upload Loading Popover -->
   <div id="loadingPopover" class="loading-popover" hidden>
-    <div class="spinner"></div>
-    <p>Uploading your photos, please wait...</p>
+    <div>
+      <div class="spinner"></div>
+      <p>Uploading your photos, please wait...</p>
+      <p>This may take a moment, leave your browser open until the upload completes!</p>
+    </div>
   </div>
 </body>
 
